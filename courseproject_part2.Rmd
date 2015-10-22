@@ -1,25 +1,25 @@
 ---
 title: "Analysis of the ToothGrowth data in R"
 author: "Ray Qiu"
-date: "October 20, 2015"
+date: "October 22, 2015"
 output: 
     pdf_document:
         latex_engine: xelatex
 subtitle: Statistical Inference Course project part 2
 ---
 
-### Overview
-In the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package. 
+## Overview
+In the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package, and try to draw some conclusions based on statistical inference.
 
-### Process data
+---
 
-Load required R libraries
+#### Load required R libraries
 ```{r message=FALSE}
 library(ggplot2)
+library(dplyr)
 ```
 
-Load the ToothGrowth data and perform some basic exploratory data analyses 
-Provide a basic summary of the data.
+## Load the ToothGrowth data and perform some basic exploratory data analysis. Provide a basic summary of the data.
 ```{r}
 data("ToothGrowth")
 str(ToothGrowth)
@@ -27,11 +27,62 @@ head(ToothGrowth)
 tail(ToothGrowth)
 summary(ToothGrowth)
 ```
-
-Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+#### Convert dose to factors
 ```{r}
-
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+```
+#### Some exploratory plots
+```{r}
+ggplot(ToothGrowth, aes(x = dose, y = len)) + 
+    ggtitle("Teeth Length per Dosage Level") +
+    geom_boxplot(aes(fill = dose))
+ggplot(ToothGrowth, aes(x = supp, y = len)) + 
+    ggtitle("Teeth Length per Supplement Type") +
+    geom_boxplot(aes(fill = supp))
 ```
 
-State your conclusions and the assumptions needed for your conclusions. 
+## Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+#### Test whether supplement types have effects on teeth length
+```{r}
+t.test(len ~ supp, data = ToothGrowth)
+```
+The test result shows that p-value is 0.06063, which is greater than 0.05; And 95 percent confidence interval values contain 0. Based on this we cannot reject the null hypothesis that different supplement types have no effect on teeth length.
 
+#### Separate data into three dose groups where each group contains a pair of doses, then test each dose pair to see whether different doses have different effects on teeth length.
+```{r}
+doseGroup1 <- ToothGrowth %>% filter(dose != 2.0)
+doseGroup2 <- ToothGrowth %>% filter(dose != 1.0)
+doseGroup3 <- ToothGrowth %>% filter(dose != 0.5)
+```
+
+#### Test doseGroup1
+```{r}
+t.test(len ~ dose, data = doseGroup1)
+```
+
+#### Test doseGroup2
+```{r}
+t.test(len ~ dose, data = doseGroup2)
+```
+
+#### Test doseGroup3
+```{r}
+t.test(len ~ dose, data = doseGroup3)
+```
+The test result shows that p-value is close to 0; And 95 percent confidence interval values don't contain 0. Based on this we can reject the null hypothesis, and conclude that increasing dosage will increase teeth growth.
+
+## State your conclusions and the assumptions needed for your conclusions. 
+
+#### Conclusions
+
+* Supplement type has no effect on teeth growth.
+
+* Increasing dosage level leads to increased teeth growth.
+
+#### Assumptions
+
+* The experiment design suggest that each Guinea pig was randomly assigned to a combination of dosage and supplement type, so the tests use the independent samples methodology.
+
+* The sample of 60 Guinea pigs is representative of all Guinea pigs, so we can generalize the test conclusion to the population.
+
+* For t-test regarding tooth length per supplement type, the variances are assumed to be different for the two groups being compared.  For t-tests regarding teeth length per dosage level, we assume a constant variance across the groups.
