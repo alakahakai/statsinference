@@ -1,0 +1,37 @@
+---
+title: "Analysis of the ToothGrowth data in R"
+author: "Ray Qiu"
+date: "October 20, 2015"
+output: 
+    pdf_document:
+        latex_engine: xelatex
+subtitle: Statistical Inference Course project part 2
+---
+
+### Overview
+In the second portion of the project, we're going to analyze the ToothGrowth data in the R datasets package. 
+
+### Process data
+
+Load required R libraries
+```{r message=FALSE}
+library(ggplot2)
+```
+
+Load the ToothGrowth data and perform some basic exploratory data analyses 
+Provide a basic summary of the data.
+```{r}
+data("ToothGrowth")
+str(ToothGrowth)
+head(ToothGrowth)
+tail(ToothGrowth)
+summary(ToothGrowth)
+```
+
+Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. 
+```{r}
+
+```
+
+State your conclusions and the assumptions needed for your conclusions. 
+
